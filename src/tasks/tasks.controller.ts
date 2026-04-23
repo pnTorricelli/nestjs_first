@@ -25,15 +25,15 @@ export class TasksController {
   }
 
   @Get(":id")
-  getTaskById(@Param("id") id: string): Task | undefined {
+  getTaskById(@Param("id") id: number): Task | undefined {
     return this.tasksService.getTaskById(id);
   }
   @Patch(":id")
-  updateTask(@Param("id") id: string, @Body() UpdateTaskDto: UpdateTaskDto): Task | undefined {
+  updateTask(@Param("id") id: number, @Body() UpdateTaskDto: UpdateTaskDto): Task | undefined {
     return this.tasksService.update(id, UpdateTaskDto);
   }
   @Delete(":id")
-  deleteTask(@Param("id") id: string): void {
+  deleteTask(@Param("id") id: number): void {
     this.tasksService.deleteTask(id);
   }
 }

@@ -1,8 +1,13 @@
-import { IsNotEmpty } from "class-validator";
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreateTaskDto {
-    @IsNotEmpty()
+    
+    @IsNotEmpty({ message: 'Il titolo è obbligatorio' })
+    @IsString({ message: 'Il titolo deve essere una stringa' })
     title!: string;
-    @IsNotEmpty()
+
+
+    @IsNotEmpty({ message: 'La descrizione è obbligatoria' })
+    @IsString({ message: 'La descrizione deve essere una stringa' })
     description!: string;
 }

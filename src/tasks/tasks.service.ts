@@ -30,16 +30,16 @@ export class TasksService {
   }
 
 
-  getTaskById(id: string): Task | undefined {
+  getTaskById(id: number): Task  {
     const task = this.tasks.find(task => task.id === id);
-    if (!task)  throw new NotFoundException(`Task with ID "${id}" not found`);
+    if (!task)  throw new NotFoundException(`Il task con id ${id} non è stato trovato`);
     return task;
   }
 
   createTask(CreateTaskDto: CreateTaskDto): Task {
     const { title, description } = CreateTaskDto;
     const task: Task = {
-      id: uuidv4(),
+      id: this.tasks.length +1,
       title,
       description,
       status: TaskStatus.OPEN
@@ -49,9 +49,8 @@ export class TasksService {
     return task;
   }
 
-  update(id: string, UpdateTaskDto: UpdateTaskDto): Task | undefined {
-    const task = this.tasks.find(task => task.id === id);
-    if (!task) return undefined;
+  update(id: number, UpdateTaskDto: UpdateTaskDto): Task  {
+    const task = this.getTaskById(id);
     const { title, description, status } = UpdateTaskDto;
     if (title) task.title = title;
     if (description) task.description = description;
@@ -59,7 +58,8 @@ export class TasksService {
     return task;
   }
 
-  deleteTask(id: string): void {
-    this.tasks = this.tasks.filter(task => task.id !== id);
+  deleteTask(id: number): void {
+    const taskToDelete = this.getTaskById(id);
+    this.tasks = this.tasks.filter(task => task.id !== taskToDelete.id);
   }
 }
