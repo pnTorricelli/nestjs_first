@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Task } from "./task.entity";
 import { Repository } from "typeorm";
@@ -30,9 +30,8 @@ export class TaskRepository {
         return query.getMany();
     }
 
-    async getTaskById(id: number): Promise<Task> {
+    async getTaskById(id: number): Promise<Task|null> {
         const found = await this.taskRepository.findOneBy({ id });
-        if (!found) throw new NotFoundException("Task non trovato");
         return found
     }
 
@@ -47,14 +46,13 @@ export class TaskRepository {
         return task;
     }
 
-    async update(id: number, UpdateTaskDto: UpdateTaskDto): Promise<Task> {
-        const task = await this.getTaskById(id);
+    async update(task: Task, UpdateTaskDto: UpdateTaskDto): Promise<Task> {
         Object.assign(task, UpdateTaskDto);
         await this.taskRepository.save(task);
         return task
     }
-    async deleteTask(id: number): Promise<void> {
-        const taskToDelete = await this.getTaskById(id);
-        await this.taskRepository.remove(taskToDelete);
+    async deleteTask(id: number): Promise<boolean> {
+        const taskToDelete = await this.taskRepository.delete(id);
+        return taskToDelete.affected !== 0
     }
 }
