@@ -17,10 +17,11 @@ export class UsersRepository {
 
         const  salt = await bcrypt.genSalt();
         const hashedPassword= await bcrypt.hash(password,salt);
-        const user = this.usersRepository.create({
+        const user =  this.usersRepository.create({
             username,
             password:hashedPassword
         })
+        console.log("HASH",hashedPassword)
         try {
              await this.usersRepository.save(user);
         } catch (error:any) {
@@ -34,6 +35,6 @@ export class UsersRepository {
     }
 
     async findOne(dto: FindUserDto):Promise<User|null>{
-        return this.usersRepository.findOneBy({username:dto.username})
+        return await this.usersRepository.findOneBy({username:dto.username})
     }
-}
+} 
