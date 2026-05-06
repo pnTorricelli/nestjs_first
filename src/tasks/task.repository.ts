@@ -6,15 +6,17 @@ import { CreateTaskDto } from "./dto/create-tank.dto"
 import { TaskStatus } from "./task-status.enum";
 import { UpdateTaskDto } from "./dto/update-tank.dto"
 import { GetTasksFilterDto } from "./dto/get-task-filter.dto";
+import { User } from "src/auth/user.entity";
 
 @Injectable()
 export class TaskRepository {
     constructor(@InjectRepository(Task)
     private taskRepository: Repository<Task>) { }
 
-    async getAll(filterDto: GetTasksFilterDto): Promise<Task[]> {
+    async getAll(filterDto: GetTasksFilterDto, user: User): Promise<Task[]> {
         const { status, search } = filterDto;
         const query = this.taskRepository.createQueryBuilder("task");
+        query.where({ user });
 
         if (status) {
             query.andWhere("task.status = :status", { status });
@@ -30,17 +32,18 @@ export class TaskRepository {
         return query.getMany();
     }
 
-    async getTaskById(id: number): Promise<Task|null> {
-        const found = await this.taskRepository.findOneBy({ id });
+    async getTaskById(id: number, user: User): Promise<Task | null> {
+        const found = await this.taskRepository.findOne({where:{ id,user }});
         return found
     }
 
-    async createTask(CreateTaskDto: CreateTaskDto): Promise<Task> {
+    async createTask(CreateTaskDto: CreateTaskDto, user: User): Promise<Task> {
         const { title, description } = CreateTaskDto;
         const task = this.taskRepository.create({
             title,
             description,
-            status: TaskStatus.OPEN
+            status: TaskStatus.OPEN,
+            user
         })
         await this.taskRepository.save(task)
         return task;
@@ -51,8 +54,8 @@ export class TaskRepository {
         await this.taskRepository.save(task);
         return task
     }
-    async deleteTask(id: number): Promise<boolean> {
-        const taskToDelete = await this.taskRepository.delete(id);
+    async deleteTask(id: number,user:User): Promise<boolean> {
+        const taskToDelete = await this.taskRepository.delete({id,user});
         return taskToDelete.affected !== 0
     }
 }
