@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Task } from "./task.entity";
 import { CreateTaskDto } from './dto/create-tank.dto';
 import { TaskRepository } from './task.repository';
 import { UpdateTaskDto } from "./dto/update-tank.dto"
 import { GetTasksFilterDto } from './dto/get-task-filter.dto';
-import { User } from 'src/auth/user.entity';
+import { User } from '../auth/user.entity';
 @Injectable()
 export class TasksService {
   constructor(
@@ -12,7 +12,10 @@ export class TasksService {
   ) { }
 
   getAllTasks(filterDto: GetTasksFilterDto, user: User): Promise<Task[]> {
-    return this.taskRepository.getAll(filterDto, user);
+    const task= this.taskRepository.getAll(filterDto, user);
+    if(task === undefined) {
+      throw new InternalServerErrorException()};
+    return task;
   }
 
   async getTaskById(id: number, user: User): Promise<Task> {

@@ -6,7 +6,7 @@ import { CreateTaskDto } from "./dto/create-tank.dto"
 import { TaskStatus } from "./task-status.enum";
 import { UpdateTaskDto } from "./dto/update-tank.dto"
 import { GetTasksFilterDto } from "./dto/get-task-filter.dto";
-import { User } from "src/auth/user.entity";
+import { User } from "../auth/user.entity";
 
 @Injectable()
 export class TaskRepository {
@@ -55,7 +55,7 @@ export class TaskRepository {
         return task
     }
     async deleteTask(id: number,user:User): Promise<boolean> {
-        const taskToDelete = await this.taskRepository.delete({id,user});
+        const taskToDelete = await this.taskRepository.delete({id});
         return taskToDelete.affected !== 0
     }
 }
